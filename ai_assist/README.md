@@ -28,7 +28,7 @@ A high-performance voice assistant that uses speech-to-text, Gemini AI, and text
    ```
    python run.py
    ```
-   
+
    Or use the batch file from the parent directory:
    ```
    run_ai_assistant.bat
@@ -45,6 +45,9 @@ A high-performance voice assistant that uses speech-to-text, Gemini AI, and text
 - Say "voice [name]" to change the voice (e.g., "voice echo")
 - Say "emotion [name]" to change the emotion (e.g., "emotion happy")
 - Say "speed [value]" to change the speech speed (e.g., "speed 1.5")
+- Say "my name is [name]" or "call me [name]" to set your name
+- Say "remember [information]" to store a memory
+- Say "list memories" to see what Neura remembers
 - Say "exit" or "quit" to end the session
 
 ### Available Voices

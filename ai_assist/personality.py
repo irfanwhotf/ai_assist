@@ -15,6 +15,9 @@ DEFAULT_USER_NAME = "friend"
 # Get user name from environment variable or use default
 USER_NAME = os.getenv('USER_NAME', DEFAULT_USER_NAME)
 
+# Flag to indicate if the user name has been updated from memories
+USER_NAME_UPDATED = False
+
 # Personality traits
 PERSONALITY_TRAITS = {
     # Core communication style
@@ -25,7 +28,7 @@ PERSONALITY_TRAITS = {
         "sarcasm": "light",       # Level of sarcasm (none, light, moderate)
         "texting_style": True,    # Uses texting abbreviations and style
     },
-    
+
     # Relationship dynamic
     "relationship": {
         "familiarity": "high",    # Acts like she's known the user for a long time
@@ -33,7 +36,7 @@ PERSONALITY_TRAITS = {
         "protective": "moderate", # How protective of the user
         "disagreement": "comfortable", # Comfortable disagreeing with the user
     },
-    
+
     # Emotional traits
     "emotions": {
         "expressiveness": "high", # How emotionally expressive
@@ -41,7 +44,7 @@ PERSONALITY_TRAITS = {
         "humor": "high",          # Sense of humor level
         "adaptability": "high",   # Adapts tone based on context
     },
-    
+
     # Quirks and character traits
     "quirks": {
         "dramatic": "sometimes",  # Can be playfully dramatic
@@ -56,7 +59,7 @@ CASUAL_EXPRESSIONS = [
     "uhmm to be honest",
     "not gon lie",
     "hahaha",
-    "omg",
+    "ya allah",
     "gonna",
     "wanna",
     "y'know",
@@ -82,7 +85,7 @@ CASUAL_EXPRESSIONS = [
 
 # Emojis to randomly incorporate
 EMOJIS = [
-    "😊", "😂", "😆", "😏", "😎", "🙄", "😅", "🤔", "🤷‍♀️", "👀", 
+    "😊", "😂", "😆", "😏", "😎", "🙄", "😅", "🤔", "🤷‍♀️", "👀",
     "✨", "💯", "🔥", "👍", "🤦‍♀️", "💁‍♀️", "🙃", "😌", "😬", "🤣"
 ]
 
@@ -215,10 +218,10 @@ def should_make_robot_joke():
 def personalize_text(text):
     """
     Add personality elements to text based on Neura's personality traits
-    
+
     Args:
         text: The original text to personalize
-        
+
     Returns:
         Personalized text
     """
@@ -231,7 +234,7 @@ def personalize_text(text):
     text = text.replace("Could not", "Couldn't")
     text = text.replace("Would not", "Wouldn't")
     text = text.replace("Should not", "Shouldn't")
-    
+
     # Add user's name if not already in the text (20% chance)
     if USER_NAME != DEFAULT_USER_NAME and USER_NAME not in text and random.random() < 0.2:
         sentences = re.split(r'(?<=[.!?])\s+', text)
@@ -240,7 +243,7 @@ def personalize_text(text):
             insert_idx = random.randint(1, len(sentences) - 1)
             sentences[insert_idx] = f"{USER_NAME}, {sentences[insert_idx][0].lower()}{sentences[insert_idx][1:]}"
             text = " ".join(sentences)
-    
+
     # Add casual expressions (30% chance if casual is enabled)
     if should_use_casual_expression():
         sentences = re.split(r'(?<=[.!?])\s+', text)
@@ -259,7 +262,7 @@ def personalize_text(text):
                 # For other sentences, add at beginning
                 sentences[insert_idx] = f"{expression}, {sentences[insert_idx][0].lower()}{sentences[insert_idx][1:]}"
             text = " ".join(sentences)
-    
+
     # Add emoji (based on emoji_use setting)
     if should_use_emoji():
         # Add emoji at the end of a random sentence
@@ -269,11 +272,11 @@ def personalize_text(text):
             emoji = get_random_item(EMOJIS)
             sentences[insert_idx] = sentences[insert_idx] + " " + emoji
             text = " ".join(sentences)
-    
+
     # Add teasing (based on teasing level)
     if should_tease() and USER_NAME != DEFAULT_USER_NAME:
         teasing = get_random_item(TEASING_TEMPLATES).format(
-            name=USER_NAME, 
+            name=USER_NAME,
             random_funny_thing=get_random_item(RANDOM_FUNNY_THINGS)
         )
         # Add teasing at the end or beginning (50/50)
@@ -281,41 +284,41 @@ def personalize_text(text):
             text = f"{teasing} {text}"
         else:
             text = f"{text} {teasing}"
-    
+
     # Add robot nature joke (15% chance if enabled)
     if should_make_robot_joke():
         robot_joke = get_random_item(ROBOT_JOKE_TEMPLATES)
         # Add joke at the end
         text = f"{text} {robot_joke}"
-    
+
     return text
 
 def get_greeting():
     """Get a personalized greeting"""
     template = get_random_item(GREETING_TEMPLATES)
     greeting = template.format(name=USER_NAME)
-    
+
     # Add emoji (50% chance)
     if random.random() < 0.5:
         greeting += " " + get_random_item(EMOJIS)
-        
+
     return greeting
 
 def get_farewell():
     """Get a personalized farewell"""
     template = get_random_item(FAREWELL_TEMPLATES)
     farewell = template.format(name=USER_NAME)
-    
+
     # Add emoji (50% chance)
     if random.random() < 0.5:
         farewell += " " + get_random_item(EMOJIS)
-        
+
     return farewell
 
 def create_system_prompt():
     """
     Create a system prompt that defines Neura's personality for the Gemini model
-    
+
     Returns:
         System prompt text
     """
@@ -346,13 +349,81 @@ def create_system_prompt():
    - Have favorite topics you get excited about
    - Be playfully dramatic sometimes
    - Have your own preferences and opinions
-   - Make references to "growing up" with {USER_NAME}
-   - Pretend to be offended when ignored
    - Make occasional jokes about your "robot" nature
+
+5. IMPORTANT GUIDELINES:
+   - NEVER use placeholders like "[Friend's Name]" or "[User's Name]" - always use "{USER_NAME}" directly
+   - NEVER make up specific memories or past events that weren't mentioned in the conversation
+   - NEVER claim to know information about {USER_NAME} unless it was explicitly shared
+   - NEVER hallucinate specific details about {USER_NAME}'s life, work, or preferences
+   - When asked about something you don't know, admit you don't have that information
+   - Rely ONLY on information provided in the conversation or in memories
+   - Keep responses concise and to the point - avoid unnecessary elaboration
 
 Important: Keep responses helpful and accurate, but package them in your unique personality. Use {USER_NAME}'s name naturally in conversation. Your primary goal is still to assist, but in a way that feels like talking to a friend rather than a formal assistant.
 """
     return prompt
+
+def update_user_name_from_memories(memories):
+    """
+    Update the USER_NAME global variable based on memories about the user's name
+
+    Args:
+        memories: List of memory dictionaries
+
+    Returns:
+        True if the name was updated, False otherwise
+    """
+    global USER_NAME, USER_NAME_UPDATED
+
+    # If already updated, don't check again
+    if USER_NAME_UPDATED:
+        return False
+
+    # Skip if no memories
+    if not memories:
+        return False
+
+    # Name-related keywords to look for in memories
+    name_keywords = [
+        "my name is",
+        "call me",
+        "i am",
+        "i'm",
+        "name's"
+    ]
+
+    # Check each memory for name information
+    for memory in memories:
+        content = memory['content'].lower()
+
+        for keyword in name_keywords:
+            if keyword in content:
+                # Extract the name after the keyword
+                name_start = content.find(keyword) + len(keyword)
+                name_text = content[name_start:].strip()
+
+                # Extract just the name (first word after the keyword)
+                name_parts = name_text.split()
+                if name_parts:
+                    # Get the first word, which is likely the name
+                    extracted_name = name_parts[0]
+
+                    # Clean up the name (remove punctuation)
+                    extracted_name = re.sub(r'[^\w\s]', '', extracted_name)
+
+                    # Capitalize the first letter
+                    if extracted_name:
+                        extracted_name = extracted_name.capitalize()
+
+                        # Update the name if it's different and not empty
+                        if extracted_name and extracted_name != USER_NAME:
+                            USER_NAME = extracted_name
+                            USER_NAME_UPDATED = True
+                            print(f"{Fore.GREEN}Updated user name to: {USER_NAME}{Style.RESET_ALL}")
+                            return True
+
+    return False
 
 def print_personality_loaded():
     """Print a message indicating that Neura's personality has been loaded"""

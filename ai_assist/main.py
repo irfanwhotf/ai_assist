@@ -17,6 +17,7 @@ from .tts import speak, DEFAULT_VOICE, DEFAULT_EMOTION, DEFAULT_SPEED, SUPPORTED
 from .stt import listen_for_speech, initialize_whisper
 from .gemini_api import GeminiAssistant
 from .personality import get_greeting, get_farewell
+from .memory import get_memory_system
 
 # Initialize colorama for colored terminal output
 init()
@@ -43,7 +44,10 @@ def print_system_info():
     print(f"Say 'exit' or 'quit' to end the chat")
     print(f"Say 'voice <name>' to change the voice")
     print(f"Say 'emotion <name>' to change the emotion")
-    print(f"Say 'speed <value>' to change the speed{Style.RESET_ALL}")
+    print(f"Say 'speed <value>' to change the speed")
+    print(f"Say 'my name is <name>' or 'call me <name>' to set your name")
+    print(f"Say 'remember <info>' to store a memory")
+    print(f"Say 'list memories' to see what I remember{Style.RESET_ALL}")
     print()
 
 async def run_async(func, *args, **kwargs):
@@ -61,6 +65,10 @@ async def voice_assistant():
 
     # Initialize the whisper model
     await run_async(initialize_whisper)
+
+    # Initialize the memory system
+    memory_system = get_memory_system()
+    print(f"{Fore.GREEN}Memory system initialized{Style.RESET_ALL}")
 
     # Initialize the Gemini assistant
     gemini = GeminiAssistant()
