@@ -1,5 +1,5 @@
 @echo off
-echo Starting AI Voice Assistant...
+echo Starting Neura Voice Assistant...
 cd %~dp0
-python ai_assist/run.py
+python -m ai_assist.run
 pause

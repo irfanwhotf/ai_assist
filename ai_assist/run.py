@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ai_assist.tts import speak, DEFAULT_VOICE, DEFAULT_EMOTION, DEFAULT_SPEED, SUPPORTED_VOICES, SUPPORTED_EMOTIONS
 from ai_assist.stt import listen_for_speech, initialize_whisper
 from ai_assist.gemini_api import GeminiAssistant
+from ai_assist.personality import get_greeting, get_farewell
 
 # Initialize colorama for colored terminal output
 init()
@@ -39,7 +40,7 @@ executor = ThreadPoolExecutor(max_workers=4)
 
 def print_system_info():
     """Print system information and settings"""
-    print(f"{Fore.GREEN}=== AI Voice Assistant ===")
+    print(f"{Fore.GREEN}=== Neura Voice Assistant ===")
     print(f"Using voice: {TTS_VOICE}, emotion: {TTS_EMOTION}, speed: {TTS_SPEED}x")
     print(f"Press and hold Shift+Spacebar to record speech")
     print(f"Say 'exit' or 'quit' to end the chat")
@@ -60,41 +61,41 @@ async def voice_assistant():
     """Run the voice assistant"""
     # Declare globals that will be modified in this function
     global TTS_VOICE, TTS_EMOTION, TTS_SPEED
-    
+
     # Initialize the whisper model
     await run_async(initialize_whisper)
-    
+
     # Initialize the Gemini assistant
     gemini = GeminiAssistant()
-    
+
     # Print system information
     print_system_info()
-    
-    # Initial greeting
-    greeting = "Hello! I'm your voice assistant powered by Gemini. Press and hold Shift+Spacebar to speak."
-    print(f"{Fore.YELLOW}Assistant: {greeting}{Style.RESET_ALL}")
+
+    # Initial greeting with Neura's personality
+    greeting = get_greeting()
+    print(f"{Fore.MAGENTA}Neura: {greeting}{Style.RESET_ALL}")
     await run_async(speak, greeting, TTS_VOICE, TTS_EMOTION, TTS_SPEED)
-    
+
     # Chat loop
     while True:
         # Listen for speech
         user_input = await run_async(listen_for_speech)
-        
+
         # Print transcribed text
         print(f"{Fore.GREEN}You: {user_input}{Style.RESET_ALL}")
-        
+
         # Check if the transcription is empty
         if not user_input.strip():
             print(f"{Fore.RED}No speech detected. Please try again.{Style.RESET_ALL}")
             continue
-            
+
         # Check for exit command
         if any(exit_word in user_input.lower() for exit_word in ['exit', 'quit', 'bye']):
-            farewell = "Goodbye! Have a great day!"
-            print(f"{Fore.YELLOW}Assistant: {farewell}{Style.RESET_ALL}")
+            farewell = get_farewell()
+            print(f"{Fore.MAGENTA}Neura: {farewell}{Style.RESET_ALL}")
             await run_async(speak, farewell, TTS_VOICE, TTS_EMOTION, TTS_SPEED)
             break
-            
+
         # Check for voice command
         if user_input.lower().startswith('voice '):
             voice_name = user_input.lower().split('voice ')[1].strip()
@@ -106,7 +107,7 @@ async def voice_assistant():
                 print(f"{Fore.RED}Unsupported voice: {voice_name}{Style.RESET_ALL}")
                 await run_async(speak, f"Sorry, {voice_name} is not a supported voice", TTS_VOICE, TTS_EMOTION, TTS_SPEED)
             continue
-            
+
         # Check for emotion command
         if user_input.lower().startswith('emotion '):
             emotion_name = user_input.lower().split('emotion ')[1].strip()
@@ -118,7 +119,7 @@ async def voice_assistant():
                 print(f"{Fore.RED}Unsupported emotion: {emotion_name}{Style.RESET_ALL}")
                 await run_async(speak, f"Sorry, {emotion_name} is not a supported emotion", TTS_VOICE, TTS_EMOTION, TTS_SPEED)
             continue
-            
+
         # Check for speed command
         if user_input.lower().startswith('speed '):
             try:
@@ -134,12 +135,12 @@ async def voice_assistant():
                 print(f"{Fore.RED}Invalid speed value{Style.RESET_ALL}")
                 await run_async(speak, "Please provide a valid number for speed", TTS_VOICE, TTS_EMOTION, TTS_SPEED)
             continue
-            
+
         # Get response from Gemini
         response_text = await run_async(gemini.get_response, user_input)
-        
+
         # Print and speak the response
-        print(f"{Fore.YELLOW}Assistant: {response_text}{Style.RESET_ALL}")
+        print(f"{Fore.MAGENTA}Neura: {response_text}{Style.RESET_ALL}")
         await run_async(speak, response_text, TTS_VOICE, TTS_EMOTION, TTS_SPEED)
 
 def main():
