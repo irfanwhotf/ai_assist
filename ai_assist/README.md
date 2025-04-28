@@ -12,12 +12,27 @@ A high-performance voice assistant that uses speech-to-text, Gemini AI, and text
 - **Shift+Spacebar Recording**: Press and hold to speak, release to process
 - **Customizable**: Change voice, emotion, and speech speed on the fly
 
-## Quick Start
+## Setup
 
-Run the voice assistant using the batch file:
-```
-run_ai_assistant.bat
-```
+1. Install the required dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+
+2. Make sure you have a `.env` file with your Gemini API key:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
+3. Run the voice assistant:
+   ```
+   python run.py
+   ```
+   
+   Or use the batch file from the parent directory:
+   ```
+   run_ai_assistant.bat
+   ```
 
 ## Usage
 
@@ -32,16 +47,31 @@ run_ai_assistant.bat
 - Say "speed [value]" to change the speech speed (e.g., "speed 1.5")
 - Say "exit" or "quit" to end the session
 
-## Setup
+### Available Voices
 
-1. Install the required dependencies:
-   ```
-   pip install -r ai_assist/requirements.txt
-   ```
+- alloy
+- echo
+- fable
+- onyx
+- nova (default)
+- shimmer
+- ash
+- coral
+- sage
 
-2. Make sure you have a `.env` file in the ai_assist directory with your Gemini API key:
-   ```
-   GEMINI_API_KEY=your_api_key_here
-   ```
+### Available Emotions
 
-For more detailed information, see the [ai_assist/README.md](ai_assist/README.md) file.
+- happy
+- sad
+- excited
+- calm
+- angry
+- fearful
+- surprised
+- neutral (default)
+- professional
+- friendly
+- enthusiastic
+- serious
+- whisper
+- shouting
